@@ -71,11 +71,11 @@ public class PlanChecker {
 		pchPlayer.evaluateMatrix();
 		pchPlayer.printMatrix(pchPlayer.getEvaluationMatrix());
 		System.out.println();
-		System.out.println("my wins: "+pchPlayer.checkWins());
+		//System.out.println("my wins: "+pchPlayer.checkWins());
 		System.out.println();
 		pchOponent.evaluateMatrix();		
 		pchOponent.printMatrix(pchOponent.getEvaluationMatrix());
-		System.out.println("oponent wins: "+pchOponent.checkWins());
+		//System.out.println("oponent wins: "+pchOponent.checkWins());
 	}
 	
 	public PlanChecker(String[][] plan, String player, String playerOponent) {
@@ -259,7 +259,7 @@ public class PlanChecker {
 		}
 	}
 	
-	public int checkWins(){
+	/*public int checkWins(){
 		int wins = 0;
 		for(int i = 0; i<plan.length; i++){
 			int countRow = 0;
@@ -326,61 +326,6 @@ public class PlanChecker {
 		}
 		return count;
 			
-	}
-	
-	/*public int checkViaRows(int row, int column, int count){
-		if(player.equals(plan[row][column])){
-			count++;
-		}else{
-			count = 0;
-		}
-		return count;		
-	}
-	
-	public int checkViaColumns(int column, int row, int count){
-		if(player.equals(plan[row][column])){
-			count++;
-		}else{
-			count = 0;
-		}
-		return count;
-		
-	}
-	
-	public int checkDownRight(int row, int column, int count){
-		if(row < 0){
-			return count;
-		}
-		
-		if(row >= plan.length){
-			return count;
-		}
-		
-		if(player.equals(plan[row][column])){
-			count++;
-		}else{
-			count = 0;
-		}
-		return count;
-		
-	}
-	
-	public int checkUpRight(int row, int column, int count){
-		if(row < 0){
-			return count;
-		}
-		
-		if(row >= plan.length){
-			return count;
-		}
-		
-		if(player.equals(plan[row][column])){
-			count++;
-		}else{
-			count = 0;
-		}
-		return count;
-		
 	}*/
 
 }

@@ -6,6 +6,7 @@ import java.util.Random;
 
 import my.janscop.game.utils.Box;
 import my.janscop.game.utils.Plan;
+import my.janscop.game.utils.PlanUtil;
 
 public class AiProcessor {
 	
@@ -114,8 +115,9 @@ public class AiProcessor {
 		Plan newPlan = plan.clone();
 		newPlan.makeTurn(box);
 		
-		PlanChecker checkerP = new PlanChecker(plan.getPlanMatrix(), "X", "O");					
-		int myWins = checkerP.checkWins();
+		//PlanChecker checkerP = new PlanChecker(plan.getPlanMatrix(), "X", "O");					
+		//int myWins = checkerP.checkWins();
+		int myWins = PlanUtil.checkWins(plan.getPlanMatrix(), "X");
 		if(myWins == 1){
 			return 5;
 		}else if(myWins > 1){
@@ -140,8 +142,9 @@ public class AiProcessor {
 		Plan newPlan = plan.clone();
 		newPlan.makeTurn(box);
 								
-		PlanChecker checkerO = new PlanChecker(plan.getPlanMatrix(), "O", "X");		
-		int myWins = checkerO.checkWins();
+		//PlanChecker checkerO = new PlanChecker(plan.getPlanMatrix(), "O", "X");
+		//int myWins = checkerO.checkWins();
+		int myWins = PlanUtil.checkWins(plan.getPlanMatrix(), "O");
 		if(myWins == 1){
 			return -5;
 		}else if(myWins > 1){

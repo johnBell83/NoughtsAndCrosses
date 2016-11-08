@@ -21,6 +21,12 @@ public class Plan implements Cloneable{
 	}
 	
 	public boolean makeTurn(int i, int j){
+		if(i >= planMatrix.length || j >= planMatrix.length){
+			return false;
+		}
+		if(planMatrix[i][j] != null){
+			return false;
+		}
 		if(!isPossible2MakeTurn()){
 			return false;
 		}
@@ -30,7 +36,7 @@ public class Plan implements Cloneable{
 	}
 	
 	public List<Box> getFreeBoxes(){
-		List<Box> retList = new ArrayList<>();
+		List<Box> retList = new ArrayList<Box>();
 		for(int i = 0; i<planMatrix.length; i++){
 			for(int j = 0; j<planMatrix.length; j++){
 				if(planMatrix[i][j] == null){
