@@ -9,8 +9,7 @@ import my.janscop.game.utils.Plan;
 
 public class Game {	
 	
-	public static void  main(String args[]) throws IOException{
-		
+	public static void  main(String args[]) throws IOException{		
 		
 		Plan plan = new Plan(true, 20);
 		AiProcessor processor = new AiProcessor(20);
@@ -29,11 +28,11 @@ public class Game {
 				}
 				
 				Box inputBox = parseInput(inputString);
-				plan.makeTurn(inputBox.getI(), inputBox.getJ());
+				plan.makeTurn(inputBox);
 				plan.printPlan();
 				
 				inputBox = processor.findNewTurn(plan);
-				plan.makeTurn(inputBox.getI(), inputBox.getJ());
+				plan.makeTurn(inputBox);
 				plan.printPlan();
 			}
 			
@@ -48,7 +47,7 @@ public class Game {
 	
 	public static Box parseInput(String input){		
 		String[] inputValues = input.split(";");
-		Box ret = new Box(Integer.parseInt(inputValues[0]), Integer.parseInt(inputValues[1]));		
+		Box ret = new Box(Integer.parseInt(inputValues[0]), Integer.parseInt(inputValues[1]), -1);		
 		return ret;
 	}
 }

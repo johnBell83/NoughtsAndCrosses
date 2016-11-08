@@ -16,6 +16,10 @@ public class Plan implements Cloneable{
 		this.nextTurn = aiStart ? "X" : "O";			
 	}
 	
+	public boolean makeTurn(Box box){
+		return makeTurn(box.i, box.j);
+	}
+	
 	public boolean makeTurn(int i, int j){
 		if(!isPossible2MakeTurn()){
 			return false;
@@ -30,7 +34,7 @@ public class Plan implements Cloneable{
 		for(int i = 0; i<planMatrix.length; i++){
 			for(int j = 0; j<planMatrix.length; j++){
 				if(planMatrix[i][j] == null){
-					retList.add(new Box(i, j));
+					retList.add(new Box(i, j, -1));
 				}
 			}
 		}		

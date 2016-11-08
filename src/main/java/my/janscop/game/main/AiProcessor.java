@@ -10,12 +10,38 @@ import my.janscop.game.utils.Plan;
 public class AiProcessor {
 	
 	private int planSize;
+	private Random r;
 
 	public AiProcessor(int planSize){
 		this.planSize = planSize;
+		this.r = new Random();
 	}
 	
-	public Box findNewTurn(Plan plan){
+	public Box findNewTurn(Plan plan){		
+		
+		List<Box> listOfBoxes = getPotentionalListOfBoxes(plan);
+		
+		if(listOfBoxes.size() > 0){
+			int evaluation = listOfBoxes.get(0).getEvaluation();
+			
+			if(evaluation == 3){
+				Box choosenBox = makeChoise(plan, listOfBoxes);
+				return choosenBox;
+			}else{			
+				Box choosenBox = listOfBoxes.get(r.nextInt(listOfBoxes.size()));
+				return choosenBox;
+			}
+		}
+		
+		
+		/*Random r = new Random();		
+		Box selectedBox = listOfBoxes.get(r.nextInt(listOfBoxes.size()));
+		return selectedBox;*/
+		Box choosenBox = makeChoise(plan, listOfBoxes);
+		return choosenBox;
+	}
+	
+	private List<Box> getPotentionalListOfBoxes(Plan plan){
 		PlanChecker checkerP = new PlanChecker(plan.getPlanMatrix(), "X", "O");
 		PlanChecker checkerO = new PlanChecker(plan.getPlanMatrix(), "O", "X");
 		checkerP.evaluateMatrix();
@@ -46,9 +72,7 @@ public class AiProcessor {
 			listOfBoxes = getListOfBoxes(checkerO.getEvaluationMatrix(), maxEvaluationO);
 		}
 		
-		Random r = new Random();		
-		Box selectedBox = listOfBoxes.get(r.nextInt(listOfBoxes.size()));
-		return selectedBox;		
+		return listOfBoxes;
 	}
 	
 	private List<Box> getListOfBoxes(Integer[][] evaluationMatrix, int maxEvaluation){
@@ -57,12 +81,82 @@ public class AiProcessor {
 		for(int i = 0; i<planSize; i++){
 			for(int j = 0; j<planSize; j++){
 				if(evaluationMatrix[i][j].intValue() == maxEvaluation){
-					listOfBoxes.add(new Box(i, j));
+					listOfBoxes.add(new Box(i, j, maxEvaluation));
 				}
 			}
 		}	
 		
 		return listOfBoxes;
+	}
+	
+	private Box makeChoise(Plan plan, List<Box> listOfBoxes){
+		int maxEval = 0;
+		Box choosenBox = null;
+		for (Box box : listOfBoxes) {
+			int eval = makeMyPotentionalTurn(plan, box, 2);
+			if(eval >= maxEval){
+				maxEval = eval;
+				choosenBox = box;
+			}
+		}
+		
+		if(choosenBox == null){				
+			choosenBox = listOfBoxes.get(r.nextInt(listOfBoxes.size()));				
+		}
+	
+		return choosenBox;
+	}
+	
+	private int makeMyPotentionalTurn(Plan plan, Box box, int deep){		
+		if(deep < 0){			
+			return 0;
+		}
+		Plan newPlan = plan.clone();
+		newPlan.makeTurn(box);
+		
+		PlanChecker checkerP = new PlanChecker(plan.getPlanMatrix(), "X", "O");					
+		int myWins = checkerP.checkWins();
+		if(myWins == 1){
+			return 5;
+		}else if(myWins > 1){
+			return 6;
+		}
+		
+		List<Box> listOfBoxes = getPotentionalListOfBoxes(newPlan);
+		int maxEval = 0;		
+		for(Box box2 : listOfBoxes) {
+			int eval = makeOponenPotentionalTurn(newPlan, box2, deep--);
+			if(eval > maxEval){
+				maxEval = eval;
+			}
+		}		
+		return maxEval;
+	}
+	
+	private int  makeOponenPotentionalTurn(Plan plan, Box box, int deep){				
+		if(deep < 0){		
+			return 0;
+		}
+		Plan newPlan = plan.clone();
+		newPlan.makeTurn(box);
+								
+		PlanChecker checkerO = new PlanChecker(plan.getPlanMatrix(), "O", "X");		
+		int myWins = checkerO.checkWins();
+		if(myWins == 1){
+			return -5;
+		}else if(myWins > 1){
+			return -6;
+		}
+		
+		List<Box> listOfBoxes = getPotentionalListOfBoxes(newPlan);
+		int maxEval = 0;
+		for(Box box2 : listOfBoxes) {
+			int eval = makeMyPotentionalTurn(newPlan, box2, deep--);
+			if(eval > maxEval){
+				maxEval = eval;
+			}
+		}
+		return maxEval;
 	}
 	
 }
