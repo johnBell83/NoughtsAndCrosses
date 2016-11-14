@@ -1,15 +1,19 @@
 package my.janscop.game.utils;
 
+import my.janscop.game.common.BlockAttackEnum;
+
 public class Box {
 
 	int i;
 	int j;	
 	int evaluation;
-	public Box(int i, int j, int evaluation) {
+	BlockAttackEnum blockAttack;
+	public Box(int i, int j, int evaluation, BlockAttackEnum blockAttack) {
 		super();
 		this.j = j;
 		this.i = i;
-		this.evaluation = evaluation;		
+		this.evaluation = evaluation;
+		this.blockAttack = blockAttack;
 	}
 	@Override
 	public String toString() {
@@ -32,7 +36,9 @@ public class Box {
 	}
 	public void setEvaluation(int evaluation) {
 		this.evaluation = evaluation;
+	}
+	public BlockAttackEnum getBlockAttack() {
+		return blockAttack;
 	}	
-		
 	
 }

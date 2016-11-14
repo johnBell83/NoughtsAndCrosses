@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import my.janscop.game.common.BlockAttackEnum;
 import my.janscop.game.utils.Box;
 import my.janscop.game.utils.Plan;
 import my.janscop.game.utils.PlanUtil;
@@ -20,7 +21,7 @@ public class AiProcessor {
 	
 	public Box findNewTurn(Plan plan){		
 		
-		List<Box> listOfBoxes = getPotentionalListOfBoxes(plan);
+		List<Box> listOfBoxes = getPotentionalListOfBoxes(plan, true);
 		
 		if(listOfBoxes.size() > 0){
 			int evaluation = listOfBoxes.get(0).getEvaluation();
@@ -33,16 +34,12 @@ public class AiProcessor {
 				return choosenBox;
 			}
 		}
-		
-		
-		/*Random r = new Random();		
-		Box selectedBox = listOfBoxes.get(r.nextInt(listOfBoxes.size()));
-		return selectedBox;*/
+				
 		Box choosenBox = makeChoise(plan, listOfBoxes);
 		return choosenBox;
 	}
 	
-	private List<Box> getPotentionalListOfBoxes(Plan plan){
+	private List<Box> getPotentionalListOfBoxes(Plan plan, boolean equalsOrHigher){
 		PlanChecker checkerP = new PlanChecker(plan.getPlanMatrix(), "X", "O");
 		PlanChecker checkerO = new PlanChecker(plan.getPlanMatrix(), "O", "X");
 		checkerP.evaluateMatrix();
@@ -66,23 +63,25 @@ public class AiProcessor {
 		}
 		
 		List<Box> listOfBoxes = null;
-		
-		if(maxEvaluationP >= maxEvaluationO){
-			listOfBoxes = getListOfBoxes(checkerP.getEvaluationMatrix(), maxEvaluationP);
+				
+		if(equalsOrHigher && (maxEvaluationP >= maxEvaluationO)){
+			listOfBoxes = getListOfBoxes(checkerP.getEvaluationMatrix(), maxEvaluationP, BlockAttackEnum.ATTACK);
+		}else if(!equalsOrHigher && (maxEvaluationP > maxEvaluationO)){
+			listOfBoxes = getListOfBoxes(checkerP.getEvaluationMatrix(), maxEvaluationP, BlockAttackEnum.ATTACK);
 		}else{
-			listOfBoxes = getListOfBoxes(checkerO.getEvaluationMatrix(), maxEvaluationO);
+			listOfBoxes = getListOfBoxes(checkerO.getEvaluationMatrix(), maxEvaluationO, BlockAttackEnum.BLOCK);
 		}
 		
 		return listOfBoxes;
 	}
 	
-	private List<Box> getListOfBoxes(Integer[][] evaluationMatrix, int maxEvaluation){
+	private List<Box> getListOfBoxes(Integer[][] evaluationMatrix, int maxEvaluation, BlockAttackEnum blockAttac){
 		List<Box> listOfBoxes = new ArrayList<Box>();
 		
 		for(int i = 0; i<planSize; i++){
 			for(int j = 0; j<planSize; j++){
 				if(evaluationMatrix[i][j].intValue() == maxEvaluation){
-					listOfBoxes.add(new Box(i, j, maxEvaluation));
+					listOfBoxes.add(new Box(i, j, maxEvaluation, blockAttac));
 				}
 			}
 		}	
@@ -90,7 +89,7 @@ public class AiProcessor {
 		return listOfBoxes;
 	}
 	
-	private Box makeChoise(Plan plan, List<Box> listOfBoxes){
+	public Box makeChoise(Plan plan, List<Box> listOfBoxes){
 		int maxEval = 0;
 		Box choosenBox = null;
 		for (Box box : listOfBoxes) {
@@ -114,9 +113,7 @@ public class AiProcessor {
 		}
 		Plan newPlan = plan.clone();
 		newPlan.makeTurn(box);
-		
-		//PlanChecker checkerP = new PlanChecker(plan.getPlanMatrix(), "X", "O");					
-		//int myWins = checkerP.checkWins();
+				
 		int myWins = PlanUtil.checkWins(plan.getPlanMatrix(), "X");
 		if(myWins == 1){
 			return 5;
@@ -124,18 +121,31 @@ public class AiProcessor {
 			return 6;
 		}
 		
-		List<Box> listOfBoxes = getPotentionalListOfBoxes(newPlan);
+		List<Box> listOfBoxes = getPotentionalListOfBoxes(newPlan, false);
+		
+		if((deep == 0) && (listOfBoxes.size() > 0)&&(listOfBoxes.get(0).getEvaluation() > 3)){
+			BlockAttackEnum blockAttack = listOfBoxes.get(0).getBlockAttack();
+			if(BlockAttackEnum.BLOCK.equals(blockAttack)){
+				return -1;
+			}			
+		}
+		
 		int maxEval = 0;		
 		for(Box box2 : listOfBoxes) {
-			int eval = makeOponenPotentionalTurn(newPlan, box2, deep--);
+			int eval = makeOponenPotentionalTurn(newPlan, box2, deep-1);
 			if(eval > maxEval){
 				maxEval = eval;
 			}
+			
+			if(eval < 0){
+				return eval;
+			}
+			
 		}		
 		return maxEval;
 	}
 	
-	private int  makeOponenPotentionalTurn(Plan plan, Box box, int deep){				
+	private int makeOponenPotentionalTurn(Plan plan, Box box, int deep){				
 		if(deep < 0){		
 			return 0;
 		}
@@ -151,12 +161,16 @@ public class AiProcessor {
 			return -6;
 		}
 		
-		List<Box> listOfBoxes = getPotentionalListOfBoxes(newPlan);
+		List<Box> listOfBoxes = getPotentionalListOfBoxes(newPlan, true);
 		int maxEval = 0;
 		for(Box box2 : listOfBoxes) {
-			int eval = makeMyPotentionalTurn(newPlan, box2, deep--);
+			int eval = makeMyPotentionalTurn(newPlan, box2, deep-1);
 			if(eval > maxEval){
 				maxEval = eval;
+			}
+			
+			if(eval < 0){
+				return -1;
 			}
 		}
 		return maxEval;

@@ -40,7 +40,7 @@ public class Plan implements Cloneable{
 		for(int i = 0; i<planMatrix.length; i++){
 			for(int j = 0; j<planMatrix.length; j++){
 				if(planMatrix[i][j] == null){
-					retList.add(new Box(i, j, -1));
+					retList.add(new Box(i, j, -1, null));
 				}
 			}
 		}		
@@ -56,7 +56,6 @@ public class Plan implements Cloneable{
 	
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
-		//sb.append("-------\n");
 		
 		sb.append(" ");
 		for(int i = 0; i<planMatrix.length; i++){

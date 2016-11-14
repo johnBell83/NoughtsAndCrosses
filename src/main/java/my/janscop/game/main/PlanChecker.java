@@ -69,12 +69,12 @@ public class PlanChecker {
 		PlanChecker pchOponent = new PlanChecker(plan, "O", "X");
 		
 		pchPlayer.evaluateMatrix();
-		pchPlayer.printMatrix(pchPlayer.getEvaluationMatrix());
+		pchPlayer.printMatrix(/*pchPlayer.getEvaluationMatrix()*/);
 		System.out.println();
 		//System.out.println("my wins: "+pchPlayer.checkWins());
 		System.out.println();
 		pchOponent.evaluateMatrix();		
-		pchOponent.printMatrix(pchOponent.getEvaluationMatrix());
+		pchOponent.printMatrix(/*pchOponent.getEvaluationMatrix()*/);
 		//System.out.println("oponent wins: "+pchOponent.checkWins());
 	}
 	
@@ -109,11 +109,12 @@ public class PlanChecker {
 		}		
 	}
 	
-	public void printMatrix(Integer[][] matrix){
-		for(int i = 0; i<matrix.length; i++){
+	public void printMatrix(/*Integer[][] matrix*/){
+		
+		for(int i = 0; i<evaluationMatrix.length; i++){
 			System.out.print("|");
-			for(int j = 0; j<matrix.length; j++){
-				System.out.print(matrix[i][j]);
+			for(int j = 0; j<evaluationMatrix.length; j++){
+				System.out.print(evaluationMatrix[i][j]);
 				System.out.print("|");
 			}
 			System.out.println();
@@ -253,79 +254,13 @@ public class PlanChecker {
 		if(matrix[i][j] == null){
 			matrix[i][j] = numberOfFilledItems;
 		}else if((numberOfFilledItems == 3) &&  (matrix[i][j].intValue() == 3)){
-			matrix[i][j] = 4;		
+			//TODO check it
+			//matrix[i][j] = 3;		
 		}else if(matrix[i][j] < numberOfFilledItems){
 			matrix[i][j] = numberOfFilledItems;
 		}
 	}
 	
-	/*public int checkWins(){
-		int wins = 0;
-		for(int i = 0; i<plan.length; i++){
-			int countRow = 0;
-			int countColumn = 0;
-			
-			int diagonalDownRight1 = 0;
-			int diagonalDownRight2 = 0;
-			
-			int diagonalUpRight1 = 0;
-			int diagonalUpRight2 = 0;
-			
-			for(int j = 0; j<plan.length; j++){
-				countRow = check(i, j, countRow);
-				if(countRow == 5){
-					wins++;
-					countRow = 0;
-				}
-				countColumn = check(j, i, countColumn);
-				if(countColumn == 5){
-					wins++;
-					countColumn = 0;
-				}
-				
-			
-				diagonalDownRight1 = check(i+j, j, diagonalDownRight1);
-				if(diagonalDownRight1 == 5){
-					wins++;
-					diagonalDownRight1 = 0;
-				}
-				
-				diagonalDownRight2 = check((i + j - plan.length + 1), j, diagonalDownRight2);
-				if(diagonalDownRight2 == 5){
-					wins++;
-					diagonalDownRight2 = 0;
-				}
-			
-				
-				diagonalUpRight1 = check(plan.length-1-i-j, j, diagonalUpRight1);
-				if(diagonalUpRight1 == 5){
-					wins++;
-					diagonalUpRight1 = 0;
-				}
-				
-				diagonalUpRight2 = check(((2*(plan.length-1))-1)-i-j, j, diagonalUpRight2);
-				if(diagonalUpRight2 == 5){
-					wins++;
-					diagonalUpRight2 = 0;
-				}
-			}						
-		}
-		
-		return wins;
-	}
 	
-	private int check(int row, int column, int count){
-		if((row < 0) || (row >= plan.length)){
-			return count;
-		}		
-		
-		if(player.equals(plan[row][column])){
-			count++;
-		}else{
-			count = 0;
-		}
-		return count;
-			
-	}*/
 
 }
