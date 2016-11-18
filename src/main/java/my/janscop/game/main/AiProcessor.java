@@ -6,6 +6,7 @@ import java.util.Random;
 
 import my.janscop.game.common.BlockAttackEnum;
 import my.janscop.game.utils.Box;
+import my.janscop.game.utils.EvaluatedTurn;
 import my.janscop.game.utils.Plan;
 import my.janscop.game.utils.PlanUtil;
 
@@ -19,27 +20,21 @@ public class AiProcessor {
 		this.r = new Random();
 	}
 	
-	public Box findNewTurn(Plan plan){		
+	public Box findNewTurn(Plan plan){				
+		EvaluatedTurn turns = getPotentionalListOfBoxes(plan, true);
 		
-		List<Box> listOfBoxes = getPotentionalListOfBoxes(plan, true);
-		
-		if(listOfBoxes.size() > 0){
-			int evaluation = listOfBoxes.get(0).getEvaluation();
-			
-			if(evaluation == 3){
-				Box choosenBox = makeChoise(plan, listOfBoxes);
-				return choosenBox;
-			}else{			
-				Box choosenBox = listOfBoxes.get(r.nextInt(listOfBoxes.size()));
-				return choosenBox;
-			}
+		if(turns.getEvaluation() == 3){
+			//in case of XXX or OOO try to find best choise
+			Box choosenBox = makeChoise(plan, turns.getListOfBoxes());
+			return choosenBox;
+		}else{
+			//in case of X, XX or XXXX (O, OO or OOOO) random choise from suitable boxes
+			Box choosenBox = turns.getListOfBoxes().get(r.nextInt(turns.getListOfBoxes().size()));
+			return choosenBox;
 		}
-				
-		Box choosenBox = makeChoise(plan, listOfBoxes);
-		return choosenBox;
 	}
 	
-	private List<Box> getPotentionalListOfBoxes(Plan plan, boolean equalsOrHigher){
+	private EvaluatedTurn getPotentionalListOfBoxes(Plan plan, boolean equalsOrHigher){
 		PlanChecker checkerP = new PlanChecker(plan.getPlanMatrix(), "X", "O");
 		PlanChecker checkerO = new PlanChecker(plan.getPlanMatrix(), "O", "X");
 		checkerP.evaluateMatrix();
@@ -61,27 +56,24 @@ public class AiProcessor {
 				}
 			}
 		}
-		
-		List<Box> listOfBoxes = null;
 				
-		if(equalsOrHigher && (maxEvaluationP >= maxEvaluationO)){
-			listOfBoxes = getListOfBoxes(checkerP.getEvaluationMatrix(), maxEvaluationP, BlockAttackEnum.ATTACK);
-		}else if(!equalsOrHigher && (maxEvaluationP > maxEvaluationO)){
-			listOfBoxes = getListOfBoxes(checkerP.getEvaluationMatrix(), maxEvaluationP, BlockAttackEnum.ATTACK);
+		EvaluatedTurn evaluatedTurn = null;				
+		if((equalsOrHigher && (maxEvaluationP >= maxEvaluationO)) || (!equalsOrHigher && (maxEvaluationP > maxEvaluationO))){
+			evaluatedTurn = new EvaluatedTurn(getListOfBoxes(checkerP.getEvaluationMatrix(), maxEvaluationP), maxEvaluationP, BlockAttackEnum.ATTACK);					
 		}else{
-			listOfBoxes = getListOfBoxes(checkerO.getEvaluationMatrix(), maxEvaluationO, BlockAttackEnum.BLOCK);
+			evaluatedTurn = new EvaluatedTurn(getListOfBoxes(checkerO.getEvaluationMatrix(), maxEvaluationO), maxEvaluationO, BlockAttackEnum.BLOCK);
 		}
 		
-		return listOfBoxes;
+		return evaluatedTurn;
 	}
 	
-	private List<Box> getListOfBoxes(Integer[][] evaluationMatrix, int maxEvaluation, BlockAttackEnum blockAttac){
+	private List<Box> getListOfBoxes(Integer[][] evaluationMatrix, int maxEvaluation){
 		List<Box> listOfBoxes = new ArrayList<Box>();
 		
 		for(int i = 0; i<planSize; i++){
 			for(int j = 0; j<planSize; j++){
 				if(evaluationMatrix[i][j].intValue() == maxEvaluation){
-					listOfBoxes.add(new Box(i, j, maxEvaluation, blockAttac));
+					listOfBoxes.add(new Box(i, j));
 				}
 			}
 		}	
@@ -111,27 +103,24 @@ public class AiProcessor {
 		if(deep < 0){			
 			return 0;
 		}
-		Plan newPlan = plan.clone();
-		newPlan.makeTurn(box);
-				
-		int myWins = PlanUtil.checkWins(plan.getPlanMatrix(), "X");
-		if(myWins == 1){
-			return 5;
-		}else if(myWins > 1){
-			return 6;
+		
+		int myWins = evaluateWin(plan, "X");
+		if(myWins != 0){
+			return myWins;
 		}
 		
-		List<Box> listOfBoxes = getPotentionalListOfBoxes(newPlan, false);
+		Plan newPlan = plan.clone();
+		newPlan.makeTurn(box);
 		
-		if((deep == 0) && (listOfBoxes.size() > 0)&&(listOfBoxes.get(0).getEvaluation() > 3)){
-			BlockAttackEnum blockAttack = listOfBoxes.get(0).getBlockAttack();
-			if(BlockAttackEnum.BLOCK.equals(blockAttack)){
-				return -1;
-			}			
+		EvaluatedTurn turns = getPotentionalListOfBoxes(newPlan, false);
+		
+		//if after my turn I have to blok case like OOOO
+		if((deep == 0) && (turns.getEvaluation() > 3) && BlockAttackEnum.BLOCK.equals(turns.getBlockAttack())) {	
+			return -1;				
 		}
 		
 		int maxEval = 0;		
-		for(Box box2 : listOfBoxes) {
+		for(Box box2 : turns.getListOfBoxes()) {
 			int eval = makeOponenPotentionalTurn(newPlan, box2, deep-1);
 			if(eval > maxEval){
 				maxEval = eval;
@@ -149,31 +138,44 @@ public class AiProcessor {
 		if(deep < 0){		
 			return 0;
 		}
-		Plan newPlan = plan.clone();
-		newPlan.makeTurn(box);
-								
-		//PlanChecker checkerO = new PlanChecker(plan.getPlanMatrix(), "O", "X");
-		//int myWins = checkerO.checkWins();
-		int myWins = PlanUtil.checkWins(plan.getPlanMatrix(), "O");
-		if(myWins == 1){
-			return -5;
-		}else if(myWins > 1){
-			return -6;
+		
+		int myWins = evaluateWin(plan, "O");
+		if(myWins != 0){
+			return myWins;
 		}
 		
-		List<Box> listOfBoxes = getPotentionalListOfBoxes(newPlan, true);
+		Plan newPlan = plan.clone();
+		newPlan.makeTurn(box);
+										
+		EvaluatedTurn turns = getPotentionalListOfBoxes(newPlan, true);
+		
 		int maxEval = 0;
-		for(Box box2 : listOfBoxes) {
+		for(Box box2 : turns.getListOfBoxes()) {
 			int eval = makeMyPotentionalTurn(newPlan, box2, deep-1);
 			if(eval > maxEval){
 				maxEval = eval;
 			}
 			
+			//TODO check it
 			if(eval < 0){
 				return -1;
 			}
 		}
 		return maxEval;
+	}
+	
+	private int evaluateWin(Plan plan, String player){
+		int numberOfWins = PlanUtil.checkWins(plan.getPlanMatrix(), player);
+		int eval = 0;
+		if(numberOfWins == 1){
+			eval = 5;
+		}else if(numberOfWins > 1){
+			eval = 6;
+		}
+		if("O".equals(player)){
+			return ((-1)*eval);
+		}
+		return eval;
 	}
 	
 }

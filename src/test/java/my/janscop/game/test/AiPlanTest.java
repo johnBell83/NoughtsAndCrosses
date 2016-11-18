@@ -20,16 +20,16 @@ public class AiPlanTest {
 		//5	   X O					
 		//6		 O O O					
 		//7							
-		plan.makeTurn(new Box(2, 3, -1, null));//X
-		plan.makeTurn(new Box(4, 3, -1, null));//O
-		plan.makeTurn(new Box(3, 3, -1, null));//X
-		plan.makeTurn(new Box(5, 3, -1, null));//O
-		plan.makeTurn(new Box(4, 4, -1, null));//X
-		plan.makeTurn(new Box(6, 3, -1, null));//O
-		plan.makeTurn(new Box(5, 2, -1, null));//X
-		plan.makeTurn(new Box(6, 4, -1, null));//O
-		plan.makeTurn(new Box(4, 5, -1, null));//X
-		plan.makeTurn(new Box(6, 5, -1, null));//O
+		plan.makeTurn(new Box(2, 3));//X
+		plan.makeTurn(new Box(4, 3));//O
+		plan.makeTurn(new Box(3, 3));//X
+		plan.makeTurn(new Box(5, 3));//O
+		plan.makeTurn(new Box(4, 4));//X
+		plan.makeTurn(new Box(6, 3));//O
+		plan.makeTurn(new Box(5, 2));//X
+		plan.makeTurn(new Box(6, 4));//O
+		plan.makeTurn(new Box(4, 5));//X
+		plan.makeTurn(new Box(6, 5));//O
 		
 		plan.printPlan();
 		System.out.println();

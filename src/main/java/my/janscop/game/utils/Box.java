@@ -1,12 +1,10 @@
 package my.janscop.game.utils;
 
-import my.janscop.game.common.BlockAttackEnum;
-
 public class Box {
 
-	int i;
-	int j;	
-	int evaluation;
+	private int i;
+	private int j;	
+	/*int evaluation;
 	BlockAttackEnum blockAttack;
 	public Box(int i, int j, int evaluation, BlockAttackEnum blockAttack) {
 		super();
@@ -14,24 +12,26 @@ public class Box {
 		this.i = i;
 		this.evaluation = evaluation;
 		this.blockAttack = blockAttack;
+	}*/
+	
+	public Box(int i, int j) {
+		super();
+		this.j = j;
+		this.i = i;		
 	}
+	
 	@Override
 	public String toString() {
 		return "Box [i=" + i + ", j=" + j + "]";
 	}
 	public int getI() {
 		return i;
-	}
-	public void setI(int i) {
-		this.i = i;
-	}
+	}	
 	public int getJ() {
 		return j;
 	}
-	public void setJ(int j) {
-		this.j = j;
-	}
-	public int getEvaluation() {
+	
+	/*public int getEvaluation() {
 		return evaluation;
 	}
 	public void setEvaluation(int evaluation) {
@@ -39,6 +39,6 @@ public class Box {
 	}
 	public BlockAttackEnum getBlockAttack() {
 		return blockAttack;
-	}	
+	}*/	
 	
 }

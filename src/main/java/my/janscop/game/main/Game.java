@@ -84,7 +84,7 @@ public class Game {
 	public static Box parseInput(String input){
 		try{
 			String[] inputValues = input.split(";");
-			Box ret = new Box(Integer.parseInt(inputValues[0]), Integer.parseInt(inputValues[1]), -1, null);		
+			Box ret = new Box(Integer.parseInt(inputValues[0]), Integer.parseInt(inputValues[1]));		
 			return ret;
 		}catch(Exception e){
 			return null;

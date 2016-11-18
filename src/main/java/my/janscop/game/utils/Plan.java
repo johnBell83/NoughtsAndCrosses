@@ -17,7 +17,7 @@ public class Plan implements Cloneable{
 	}
 	
 	public boolean makeTurn(Box box){
-		return makeTurn(box.i, box.j);
+		return makeTurn(box.getI(), box.getJ());
 	}
 	
 	public boolean makeTurn(int i, int j){
@@ -40,7 +40,7 @@ public class Plan implements Cloneable{
 		for(int i = 0; i<planMatrix.length; i++){
 			for(int j = 0; j<planMatrix.length; j++){
 				if(planMatrix[i][j] == null){
-					retList.add(new Box(i, j, -1, null));
+					retList.add(new Box(i, j));
 				}
 			}
 		}		
